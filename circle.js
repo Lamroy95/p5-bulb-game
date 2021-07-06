@@ -13,7 +13,7 @@ class Circle {
   }
 
   setup() {
-    this.radius = max(width, height) * 0.1;
+    this.radius = max(width, height) * 0.08;
     this.border_force_range = max(width, height) * 0.03;
     this.border_force_mult = 2;
     this.force_range = this.radius * 2.5;
