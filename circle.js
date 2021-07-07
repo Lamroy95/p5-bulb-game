@@ -1,24 +1,24 @@
 let CIRCLE_COLOR = "#FF91C8";
 let TEXT_COLOR = "#FFFFFF";
-let FILL_INC = 1;
+let FILL_INC = 0.5;
 
 
 class Circle {
   constructor() {
-    this.pos = createVector(width/2, height/2);
-    this.text_pos = createVector(width/2, height/2);
+    this.pos = createVector(width / 2, height / 2);
+    this.text_pos = createVector(width / 2, height / 2);
     this.velocity = createVector();
     this.fill_percent = 0;
     this.setup();
   }
 
   setup() {
-    this.radius = max(width, height) * 0.08;
+    this.radius = max(width, height) * 0.02;
     this.border_force_range = max(width, height) * 0.03;
     this.border_force_mult = 2;
     this.force_range = this.radius * 2.5;
     this.force_mult = 2;
-    this.fill_range = this.radius * 1.3;
+    this.fill_range = this.radius * 2.0;
     this.slowdown_coeff = 0.1;
   }
 
@@ -26,12 +26,12 @@ class Circle {
     stroke(TEXT_COLOR);
     strokeWeight(this.radius * 0.063);
     fill(CIRCLE_COLOR);
-    circle(this.pos.x, this.pos.y, this.radius);
+    // circle(this.pos.x, this.pos.y, this.radius * 2);
 
     strokeWeight(0);
     fill(TEXT_COLOR);
     textSize(this.radius * 0.5);
-    text(round(this.fill_percent, 0), this.text_pos.x, this.text_pos.y + this.radius * 0.05);
+    // text(round(this.fill_percent, 0), this.text_pos.x, this.text_pos.y + this.radius * 0.05);
   }
 
   bounce_border() {
@@ -61,29 +61,35 @@ class Circle {
   }
 
   bounce_mouse() {
-    let force = p5.Vector.sub(this.pos, createVector(mouseX, mouseY));
+    let mouse = createVector(mouseX, mouseY);
+    let force = p5.Vector.sub(this.pos, mouse);
     let dist_to_mouse = force.mag();
 
+    // some debug geometry here
     stroke('#FF0000');
     noFill();
     strokeWeight(2);
-    line(0, 0, mouseX, mouseY);
-    stroke('#00FF00');
     line(0, 0, this.pos.x, this.pos.y);
+    circle(this.pos.x, this.pos.y, 10);
+    text("pos", this.pos.x, this.pos.y + 15);
+
+    stroke('#00FF00');
+    line(0, 0, mouseX, mouseY);
+    circle(mouseX, mouseY, 10);
+    text("mouse", mouseX, mouseY + 15);
+
     stroke('#0000FF');
     line(mouseX, mouseY, force.x, force.y);
-    print(force);
-    stroke('#FF0000');
-    circle(mouseX, mouseY, 5);
-    circle(this.pos.x, this.pos.y, dist_to_mouse);
+    circle(force.x, force.y, 10);
+    text("force", force.x, force.y + 15);
+
+    strokeWeight(1);
     stroke('#0000FF');
-    circle(this.pos.x, this.pos.y, this.fill_range);
+    circle(this.pos.x, this.pos.y, this.fill_range * 2);
     stroke('#00FF00');
-    circle(this.pos.x, this.pos.y, this.force_range);
-    
+    circle(this.pos.x, this.pos.y, this.force_range * 2);
+
     if (dist_to_mouse < this.force_range) {
-      // this.velocity.setHeading(force.heading());
-      // this.velocity.add((this.force_range - dist_to_mouse) * this.force_mult);
       force.setMag((this.force_range - dist_to_mouse) * this.force_mult);
       this.velocity.add(force);
     }
@@ -91,10 +97,10 @@ class Circle {
   }
 
   update() {
-    this.text_pos.lerp(createVector(width/2, height/2), 0.07);
+    this.text_pos.lerp(createVector(width / 2, height / 2), 0.07);
 
     if (this.fill_percent >= 100) {
-      this.pos.lerp(createVector(width/2, height/2), 0.07)
+      this.pos.lerp(this.text_pos, 0.07)
       return;
     }
 
