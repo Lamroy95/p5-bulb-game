@@ -17,7 +17,7 @@ class Circle {
     this.border_force_range = max(width, height) * 0.03;
     this.border_force_mult = 2;
     this.force_range = this.radius * 2.5;
-    this.force_mult = 1;
+    this.force_mult = 2;
     this.fill_range = this.radius * 1.3;
     this.slowdown_coeff = 0.1;
   }
@@ -61,12 +61,31 @@ class Circle {
   }
 
   bounce_mouse() {
-    let mouse = createVector(mouseX, mouseY);
-    let dist_to_mouse = this.pos.dist(mouse);
+    let force = p5.Vector.sub(this.pos, createVector(mouseX, mouseY));
+    let dist_to_mouse = force.mag();
+
+    stroke('#FF0000');
+    noFill();
+    strokeWeight(2);
+    line(0, 0, mouseX, mouseY);
+    stroke('#00FF00');
+    line(0, 0, this.pos.x, this.pos.y);
+    stroke('#0000FF');
+    line(mouseX, mouseY, force.x, force.y);
+    print(force);
+    stroke('#FF0000');
+    circle(mouseX, mouseY, 5);
+    circle(this.pos.x, this.pos.y, dist_to_mouse);
+    stroke('#0000FF');
+    circle(this.pos.x, this.pos.y, this.fill_range);
+    stroke('#00FF00');
+    circle(this.pos.x, this.pos.y, this.force_range);
+    
     if (dist_to_mouse < this.force_range) {
-      let mul = this.force_range - dist_to_mouse;
-      this.velocity.add(mul * this.force_mult);
-      this.velocity.setHeading(mouse.sub(this.pos).heading() + PI);
+      // this.velocity.setHeading(force.heading());
+      // this.velocity.add((this.force_range - dist_to_mouse) * this.force_mult);
+      force.setMag((this.force_range - dist_to_mouse) * this.force_mult);
+      this.velocity.add(force);
     }
     return dist_to_mouse;
   }
